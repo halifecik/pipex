@@ -6,7 +6,7 @@
 /*   By: hademirc <hademirc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 22:57:45 by hademirc          #+#    #+#             */
-/*   Updated: 2025/03/19 23:03:29 by hademirc         ###   ########.fr       */
+/*   Updated: 2025/03/21 16:12:09 by hademirc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,11 @@ static void	ft_execute(char *cmd, char **ep)
 	char	*path;
 
 	commands = ft_split(cmd, ' ');
+	if (!commands || !commands[0])
+	{
+		ft_free_tab(commands);
+		ft_handle_error(1);
+	}
 	path = ft_get_cmd(commands[0], ep);
 	if (execve(path, commands, ep) == -1)
 	{
@@ -48,6 +53,13 @@ static void	ft_parent(char **argv, int *fd, char **ep)
 	dup2(fd[0], 0);
 	close(fd[1]);
 	ft_execute(argv[3], ep);
+}
+
+void	ft_handle_error(int val)
+{
+	if (val == 1)
+		ft_putstr_fd("USAGE: ./pipex infile '/cmd1' '/cmd2' outfile\n", 2);
+	exit(0);
 }
 
 int	main(int argc, char **argv, char **ep)

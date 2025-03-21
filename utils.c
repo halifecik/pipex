@@ -6,11 +6,22 @@
 /*   By: hademirc <hademirc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 23:03:43 by hademirc          #+#    #+#             */
-/*   Updated: 2025/03/19 23:04:59 by hademirc         ###   ########.fr       */
+/*   Updated: 2025/03/21 16:49:57 by hademirc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+static int	ft_access(char *exec, char **opt, char **path)
+{
+	if (!access(exec, F_OK | X_OK))
+	{
+		ft_free_tab(opt);
+		ft_free_tab(path);
+		return (1);
+	}
+	return (0);
+}
 
 void	ft_free_tab(char **tab)
 {
@@ -22,13 +33,6 @@ void	ft_free_tab(char **tab)
 	free(tab);
 }
 
-void	ft_handle_error(int val)
-{
-	if (val == 1)
-		ft_putstr_fd("USAGE: ./pipex infile '/cmd1' '/cmd2' outfile\n", 2);
-	exit(0);
-}
-
 int	ft_open_file(char *file, int val)
 {
 	int	rtn;
@@ -37,7 +41,7 @@ int	ft_open_file(char *file, int val)
 		rtn = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0777);
 	else
 		rtn = open(file, O_RDONLY);
-	if (val < 0)
+	if (rtn < 0)
 	{
 		ft_putstr_fd("bash: ", 2);
 		perror(file);
@@ -77,16 +81,15 @@ char	*ft_get_cmd(char *cmd, char **ep)
 	i = -1;
 	path = ft_split(ft_get_path(ep), ':');
 	opt = ft_split(cmd, ' ');
+	if (!opt || !path)
+		ft_handle_error(1);
 	while (path[++i])
 	{
 		part = ft_strjoin(path[i], "/");
 		exec = ft_strjoin(part, opt[0]);
 		free(part);
-		if (!access(exec, F_OK | X_OK))
-		{
-			ft_free_tab(opt);
+		if (ft_access(exec, opt, path))
 			return (exec);
-		}
 		free(exec);
 	}
 	ft_free_tab(path);

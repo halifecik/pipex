@@ -11,7 +11,6 @@ LIBFT = $(LIBFT_DIR)/libft.a
 RM = rm -f
 
 COLOR_MAGENTA		=	\033[0;95m
-COLOR_LIGHT_RED     =   \033[0;91m
 COLOR_LIGHT_GREEN   =   \033[0;92m
 
 all: $(NAME)
@@ -24,7 +23,7 @@ $(LIBFT):
 	@if [ ! -f "$(LIBFT)" ]; then make -C $(LIBFT_DIR); fi
 
 %.o: %.c
-	@echo "$(COLOR_LIGHT_RED)"
+	@echo "$(COLOR_MAGENTA)"
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
